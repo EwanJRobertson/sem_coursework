@@ -16,22 +16,24 @@ public class AppIntegrationTest
         app = new App();
         app.connect("localhost:33060");
     }
-
+    
     @Test
     void integrationTest()
     {
         String query = app.getQuery("test1");
         ResultSet rset = app.executeQuery(query);
         app.writeQuery(rset, 1, "test-query-results");
-
-        try
+        
+        try 
         {
             // Create filepath from filename
             File file = new File("./test-query-results.csv");
             // Create new Scanner
             Scanner scanner = new Scanner(file);
             assertEquals("1", scanner.nextLine());
-            assertEquals("code,name,continent,region,population,capital", scanner.nextLine());
+            String line = scanner.nextLine();
+            assert("code,name,continent,region,population,capital".equals(line) ||
+                    "Code,Name,Continent,Region,Population,Capital".equals(line));
             assertEquals("\"GBR\",\"United Kingdom\",\"Europe\",\"British Islands\"," +
                     "\"59623400\",\"456\"", scanner.nextLine());
             scanner.close();
