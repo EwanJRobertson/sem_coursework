@@ -40,7 +40,7 @@ class AppUnitTest
     @Test
     void executeQuery_ResultsTest ()
     {
-        ResultSet rset = app.executeQuery("SELECT Code,Name,Continent,Region,Population,Capital" +
+        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
                 "FROM country " +
                 "WHERE code = \"GBR\" " +
                 ";");
@@ -63,19 +63,13 @@ class AppUnitTest
     }
 
     @Test
-    void executeQuery_NoResultsTest () {
+    void executeQuery_NoResultsTest () 
+    {
         ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
                 "FROM country " +
                 "WHERE code = \"AAA\" " +
                 ";");
-        try
-        {
-            assertFalse(rset.next());
-        }
-        catch (SQLException e)
-        {
-            System.out.println(e.getMessage());
-        }
+            assertNull(rset);
     }
 
     @Test
@@ -90,7 +84,7 @@ class AppUnitTest
         try
         {
             // Create filepath from filename
-            File file = new File("./test-query-results.csv");
+            File file = new File("test-query-results.csv");
             // Create new Scanner
             Scanner scanner = new Scanner(file);
 
@@ -108,10 +102,10 @@ class AppUnitTest
 
     @AfterAll
     static void disconnect ()
-    { app.disconnect();}
+    { app.disconnect(); }
     
     @AfterAll
-    static void deleteTestFile()
+    static void deleteTestFile ()
     {
         try
         {
@@ -123,6 +117,5 @@ class AppUnitTest
         {
             System.out.println(e.getMessage());
         }
-
     }
 }

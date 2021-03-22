@@ -116,9 +116,9 @@ public class App
             {
                 System.out.println("Error - File not found. File " + filename + ".");
             }
-        } catch (Exception e) {
+        } catch (Exception e) 
+        {
             System.out.println(e.getMessage());
-            System.out.println("Failed to execute query.");
         }
         return null;
     }
@@ -137,7 +137,8 @@ public class App
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(query);
             // Check if result is empty
-            if (rset.isAfterLast()) {
+            if (!rset.isBeforeFirst()) 
+            {
                 System.out.println("No results.");
                 return null;
             }
@@ -220,9 +221,9 @@ public class App
         // Wipe file for writing results into
         try 
         {
-            File file = new File("./query-results.csv");
-            if (file.delete())
-                System.out.println("File Deleted");
+           File file = new File("./query-results.csv");
+           if (file.delete())
+               System.out.println("File Deleted");
         }
         catch (Exception e)
         {

@@ -16,15 +16,15 @@ public class AppIntegrationTest
         app = new App();
         app.connect("localhost:33060");
     }
-
+    
     @Test
     void integrationTest()
     {
         String query = app.getQuery("test1");
         ResultSet rset = app.executeQuery(query);
         app.writeQuery(rset, 1, "test-query-results");
-
-        try
+        
+        try 
         {
             // Create filepath from filename
             File file = new File("./test-query-results.csv");
