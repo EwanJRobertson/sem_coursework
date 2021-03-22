@@ -220,8 +220,9 @@ public class App
         // Wipe file for writing results into
         try 
         {
-            FileWriter csvWriter = new FileWriter("./query-results.csv");
-            csvWriter.close();
+            File file = new File("./query-results.csv");
+            if (file.delete())
+                System.out.println("File Deleted");
         }
         catch (Exception e)
         {

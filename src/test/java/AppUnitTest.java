@@ -8,14 +8,14 @@ import java.util.Scanner;
 class AppUnitTest
 {
     static App app;
-    
+
     @BeforeAll
     static void init ()
     {
         app = new App();
         app.connect("localhost:33060");
     }
-    
+
     @Test
     void getQuery_FileExistTest ()
     {
@@ -36,11 +36,11 @@ class AppUnitTest
     {
         assertEquals(app.getQuery("test1"), app.getQuery("test2"));
     }
-    
+
     @Test
     void executeQuery_ResultsTest ()
     {
-        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
+        ResultSet rset = app.executeQuery("SELECT Code,Name,Continent,Region,Population,Capital" +
                 "FROM country " +
                 "WHERE code = \"GBR\" " +
                 ";");
@@ -77,7 +77,52 @@ class AppUnitTest
             System.out.println(e.getMessage());
         }
     }
+
+    @Test
+    void writeQuery_ResultsTest () 
+    {
+        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
+                "FROM country " +
+                "WHERE code = \"GBR\" " +
+                ";");
+        app.writeQuery(rset, 1, "test-query-results");
+
+        try
+        {
+            // Create filepath from filename
+            File file = new File("./test-query-results.csv");
+            // Create new Scanner
+            Scanner scanner = new Scanner(file);
+
+            assertEquals("1", scanner.nextLine());
+            assertEquals("code,name,continent,region,population,capital", scanner.nextLine());
+            assertEquals("\"GBR\",\"United Kingdom\",\"Europe\",\"British Islands\"," +
+                    "\"59623400\",\"456\"", scanner.nextLine());
+            scanner.close();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @AfterAll
+    static void disconnect ()
+    { app.disconnect();}
     
     @AfterAll
-    static void disconnect () { app.disconnect(); }
+    static void deleteTestFile()
+    {
+        try
+        {
+            File file = new File("./test-query-results.csv");
+            if (file.delete())
+                System.out.println("Test csv deleted.");
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+    }
 }
