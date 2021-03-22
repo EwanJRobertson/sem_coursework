@@ -5,7 +5,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.Scanner;
 
-class MyTest
+class AppUnitTest
 {
     static App app;
 
