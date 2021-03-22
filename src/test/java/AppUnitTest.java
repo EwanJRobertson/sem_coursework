@@ -40,7 +40,7 @@ class AppUnitTest
     @Test
     void executeQuery_ResultsTest ()
     {
-        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
+        ResultSet rset = app.executeQuery("SELECT Code,Name,Continent,Region,Population,Capital" +
                 "FROM country " +
                 "WHERE code = \"GBR\" " +
                 ";");
@@ -95,7 +95,7 @@ class AppUnitTest
             Scanner scanner = new Scanner(file);
 
             assertEquals("1", scanner.nextLine());
-            assertEquals("Code,Name,Continent,Region,Population,Capital", scanner.nextLine());
+            assertEquals("code, name, continent, region, population, capital", scanner.nextLine());
             assertEquals("\"GBR\",\"United Kingdom\",\"Europe\",\"British Islands\"," +
                     "\"59623400\",\"456\"", scanner.nextLine());
             scanner.close();
