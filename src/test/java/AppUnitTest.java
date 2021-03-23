@@ -89,9 +89,7 @@ class AppUnitTest
             Scanner scanner = new Scanner(file);
 
             assertEquals("1", scanner.nextLine());
-            String line = scanner.nextLine();
-            assert("code,name,continent,region,population,capital".equals(line) ||
-                    "Code,Name,Continent,Region,Population,Capital".equals(line));
+            assertEquals("code,name,continent,region,population,capital", scanner.nextLine().toLowerCase());
             assertEquals("\"GBR\",\"United Kingdom\",\"Europe\",\"British Islands\"," +
                     "\"59623400\",\"456\"", scanner.nextLine());
             scanner.close();
