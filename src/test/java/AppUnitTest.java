@@ -9,6 +9,7 @@ class AppUnitTest
 {
     static App app;
 
+    // Create app and connect to database
     @BeforeAll
     static void init ()
     {
