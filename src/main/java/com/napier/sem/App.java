@@ -25,12 +25,12 @@ public class App
     /**
      * Connect to the MySQL database.
      */
-    public void connect()
+    public void connect (String location)
     {
         try
         {
             // Load Database driver
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         }
         catch (ClassNotFoundException e)
         {
@@ -47,7 +47,8 @@ public class App
                 // Wait a bit for db to start
                 Thread.sleep(30000);
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false", "root", "example");
+                con = DriverManager.getConnection("jdbc:mysql://" + location + 
+                        "/world?allowPublicKeyRetrieval=true&useSSL=false", "root", "example");
                 System.out.println("Successfully connected");
                 break;
             }
@@ -66,7 +67,7 @@ public class App
     /**
      * Disconnect from the MySQL database.
      */
-    public void disconnect()
+    public void disconnect ()
     {
         if (con != null)
         {
@@ -83,23 +84,22 @@ public class App
     }
 
     /**
-     * Executes SQL query
-     * @param count number of query to be executed
+     * gets SQL query from folder
+     * @param filename name of the file containing the query to be executed
+     * @return sql query
      */
-    public void executeQuery(int count)
+    public String getQuery (String filename)
     {
-        System.out.println("\nExecuting Query " + count + ".");
+        System.out.println("\nExecuting Query " + filename + ".");
         try
         {
-            // Create an SQL statement
-            Statement stmt = con.createStatement();
             // Create string for SQL statement
             String query = "";
             // Read in SQL file
             try
             {
-                // Create filepath from count
-                File file = new File("./sqlqueries/" + count + ".sql");
+                // Create filepath from filename
+                File file = new File("./sqlqueries/" + filename + ".sql");
                 // Create new Scanner
                 Scanner scanner = new Scanner(file);
                 // Read lines into string
@@ -110,70 +110,129 @@ public class App
                     if (!readLine.startsWith("--"))
                         query = query.concat(readLine + ' ');
                 }
+                return query;
             }
             catch (FileNotFoundException e)
             {
-                System.out.println("Error - File not found. Query number " + count + ".");
+                System.out.println("Error - File not found. File " + filename + ".");
             }
+        } catch (Exception e) 
+        {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * executes sql query
+     * @param query sql query to be executed
+     * @return result set of results from query
+     */
+    public ResultSet executeQuery (String query)
+    {
+        try
+        {
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(query);
             // Check if result is empty
-            if (rset.isAfterLast()) {
+            if (!rset.isBeforeFirst()) 
+            {
                 System.out.println("No results.");
-                return;
+                return null;
             }
+            return rset;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to execute query.");
+        }
+        return null;
+    }
+
+    /**
+     * writes query results to .csv file
+     * @param rset sql query results
+     * @param count identifying number of the query
+     */
+    public void writeQuery (ResultSet rset, int count, String filename)
+    {
+        try 
+        {
             // Create .csv file if it doesn't exist, open if it exists
-            FileWriter csvWriter = new FileWriter("./query-results.csv", true);
+            FileWriter csvWriter = new FileWriter("./" + filename + ".csv", true);
             // Append query number
             csvWriter.append(Integer.toString(count).concat("\n"));
             // Get column names from meta data
             ResultSetMetaData rsetMetaData = rset.getMetaData();
 
-            for (int i= 1; i<=rsetMetaData.getColumnCount(); i++)
-                csvWriter.append(rsetMetaData.getColumnName(i)).append(",");
-            csvWriter.append("\n");
+            String columnNames = "";
+            for (int i = 1; i <= rsetMetaData.getColumnCount(); i++) 
+                columnNames = columnNames.concat(rsetMetaData.getColumnName(i)).concat(",");
+            columnNames = columnNames.substring(0, columnNames.length() - 1);
+            csvWriter.append(columnNames.concat("\n"));
 
             // Write results to .csv file
             String resultStr;
-            while (rset.next()) {
+            while (rset.next()) 
+            {
                 resultStr = "";
-                for (int i= 1; i<=rsetMetaData.getColumnCount(); i++)
-                    try
+                for (int i = 1; i <= rsetMetaData.getColumnCount(); i++)
+                    try 
                     {
                         resultStr = resultStr.concat("\"").concat(rset.getString(i)).concat("\",");
-                    }
-                    catch (Exception e)
+                    } 
+                    catch (Exception e) 
                     {
                         resultStr = resultStr.concat("n/a,");
                     }
                 // .csv writer
-                resultStr = resultStr.substring(0,resultStr.length()-1);
+                resultStr = resultStr.substring(0, resultStr.length() - 1);
                 csvWriter.append(resultStr.concat("\n"));
             }
             csvWriter.append("\n\n\n");
             csvWriter.flush();
             csvWriter.close();
             System.out.println("Query complete.");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to execute query.");
+        }
+        catch (Exception e)
+        {
+            System.out.println("Failed to write query.");
         }
     }
-
+    
     /**
      * Main method
      * @param args command line arguments
      */
-    public static void main(String[] args) {
+    public static void main (String[] args)
+    {
         // Create new Application
         App a = new App();
 
         // Connect to database
-        a.connect();
+        if (args.length < 1)
+            a.connect("localhost:3306");
+        else
+            a.connect(args[0]);
+        
+        // Wipe file for writing results into
+        try 
+        {
+           File file = new File("./query-results.csv");
+           if (file.delete())
+               System.out.println("File Deleted");
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
 
         // Execute SQL statements in SQLQueries directory
         for (int i = 1; i <= 32; i++)
-            a.executeQuery(i);
+            a.writeQuery(a.executeQuery(a.getQuery(Integer.toString(i))), i, "query-results");
 
         // Disconnect from database
         a.disconnect();
