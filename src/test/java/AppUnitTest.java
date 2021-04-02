@@ -14,73 +14,63 @@ class AppUnitTest
     static void init ()
     {
         app = new App();
-        app.connect("localhost:33060");
-    }
-
-    @Test
-    void getQuery_FileExistTest ()
-    {
-        assertEquals("SELECT code, name, continent, region, population, capital " +
-                "FROM country " +
-                "WHERE code = \"GBR\" " +
-                "; ", app.getQuery("test1"));
-    }
-
-    @Test
-    void getQuery_FileNotExistTest ()
-    {
-        assertNull(app.getQuery("test0"));
-    }
-
-    @Test
-    void getQuery_SkipCommentTest ()
-    {
-        assertEquals(app.getQuery("test1"), app.getQuery("test2"));
-    }
-
-    @Test
-    void executeQuery_ResultsTest ()
-    {
-        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
-                "FROM country " +
-                "WHERE code = \"GBR\" " +
-                ";");
         try
         {
-            while (rset.next())
-            {
-                assertEquals(rset.getString(0), "GBR");
-                assertEquals(rset.getString(1), "United Kingdom");
-                assertEquals(rset.getString(2), "Europe");
-                assertEquals(rset.getString(3), "British Islands");
-                assertEquals(rset.getString(4), "59623400");
-                assertEquals(rset.getString(5), "456");
-            }
+            app.connect("localhost:33060");
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
     }
+    
+    // Test that a readable file can be read
+    @Test
+    void getQuery_FileReadableTest ()
+    {
+        assertNotNull(app.getQuery("test1"));
+    }
 
+    // Test that a non-readable file returns null
+    @Test
+    void getQuery_FileNotReadableTest ()
+    {
+        assertNull(app.getQuery("test0"));
+    }
+
+    // Test that getQuery doesn't read comments by comparing two identical files other than a 1 line comment
+    @Test
+    void getQuery_SkipCommentTest ()
+    {
+        assertEquals(app.getQuery("test1"), app.getQuery("test2"));
+    }
+
+    // Test if executeQuery returns results for a valid sql statement
+    @Test
+    void executeQuery_ResultsTest ()
+    {
+        assertNotNull(app.executeQuery("SELECT 1;"));
+    }
+
+    // Test if executeQuery returns results for a valid sql statement with no results
     @Test
     void executeQuery_NoResultsTest () 
     {
-        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
-                "FROM country " +
-                "WHERE code = \"AAA\" " +
-                ";");
-            assertNull(rset);
+        assertNull(app.executeQuery("SELECT * FROM elvis;"));
     }
 
+    // Test if executeQuery returns results for a non valid sql statement
+    @Test
+    void executeQuery_NonValidStatementTest ()
+    {
+        assertNull(app.executeQuery("This is not a query"));
+    }
+    
+    // Test if writeQuery writes results to file
     @Test
     void writeQuery_ResultsTest () 
     {
-        ResultSet rset = app.executeQuery("SELECT code, name, continent, region, population, capital " +
-                "FROM country " +
-                "WHERE code = \"GBR\" " +
-                ";");
-        app.writeQuery(rset, 1, "test-query-results");
+        app.writeQuery(app.executeQuery("SELECT 1;"), 1, "test-query-results");
 
         try
         {
@@ -90,9 +80,28 @@ class AppUnitTest
             Scanner scanner = new Scanner(file);
 
             assertEquals("1", scanner.nextLine());
-            assertEquals("code,name,continent,region,population,capital", scanner.nextLine().toLowerCase());
-            assertEquals("\"GBR\",\"United Kingdom\",\"Europe\",\"British Islands\"," +
-                    "\"59623400\",\"456\"", scanner.nextLine());
+            assertEquals("1", scanner.nextLine());
+            scanner.close();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    // Test writeQuery writes null to file
+    void writeQuery_NoResultsTest ()
+    {
+        app.writeQuery(null, 2, "test-query-results");
+
+        try
+        {
+            // Create filepath from filename
+            File file = new File("test-query-results.csv");
+            // Create new Scanner
+            Scanner scanner = new Scanner(file);
+
+            assertNull(scanner.nextLine());
             scanner.close();
         }
         catch (Exception e)
@@ -101,10 +110,21 @@ class AppUnitTest
         }
     }
 
+    // Disconnects from database
     @AfterAll
     static void disconnect ()
-    { app.disconnect(); }
+    { 
+        try 
+        {
+            app.disconnect();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
     
+    // Deletes test csv file
     @AfterAll
     static void deleteTestFile ()
     {
