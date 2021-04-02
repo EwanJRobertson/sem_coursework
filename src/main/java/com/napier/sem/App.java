@@ -25,8 +25,12 @@ public class App
     /**
      * Connect to the MySQL database.
      */
-    public void connect (String location)
+    public void connect (String location) throws Exception 
     {
+        // Throw exception if location doesn't fit formatting
+        if (!location.contains(":"))
+            throw new Exception("Improper address");
+        
         try
         {
             // Load Database driver
@@ -67,24 +71,25 @@ public class App
     /**
      * Disconnect from the MySQL database.
      */
-    public void disconnect ()
+    public void disconnect () throws Exception
     {
-        if (con != null)
-        {
-            try
+        if (con != null && !con.isClosed()) {
+            try 
             {
                 // Close connection
                 con.close();
-            }
-            catch (Exception e)
+            } 
+            catch (Exception e) 
             {
                 System.out.println("Error closing connection to database");
             }
-        }
+        } 
+        else
+            throw new Exception("Connection is null");
     }
 
     /**
-     * gets SQL query from folder
+     * Gets SQL query from folder
      * @param filename name of the file containing the query to be executed
      * @return sql query
      */
@@ -213,10 +218,17 @@ public class App
         App a = new App();
 
         // Connect to database
-        if (args.length < 1)
-            a.connect("localhost:3306");
-        else
-            a.connect(args[0]);
+        try 
+        {
+            if (args.length < 1)
+                a.connect("localhost:3306");
+            else
+                a.connect(args[0]);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
         
         // Wipe file for writing results into
         try 
@@ -235,6 +247,13 @@ public class App
             a.writeQuery(a.executeQuery(a.getQuery(Integer.toString(i))), i, "query-results");
 
         // Disconnect from database
-        a.disconnect();
+        try 
+        {
+            a.disconnect();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 }
