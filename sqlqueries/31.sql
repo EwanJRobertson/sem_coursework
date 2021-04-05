@@ -1,5 +1,5 @@
 --The population of a London
 SELECT name, population
-FROM country
-WHERE country = 'London'
+FROM city
+WHERE city = 'London'
 ;
