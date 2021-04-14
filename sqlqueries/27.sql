@@ -1,5 +1,6 @@
---The population of a continent
-Select continent, SUM(population)
-FROM country
-WHERE continent = 'Europe'
-;
+--
+SELECT 
+       continent,
+       Sum(population) AS 'population'
+FROM   country
+WHERE  continent = 'Europe'; 
