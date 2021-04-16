@@ -1,5 +1,5 @@
 --The population of a region
-Select SUM(population)
-FROM country
-WHERE region = 'Western Europe'
-;
+SELECT 
+       Sum(population) AS 'population'
+FROM   country
+WHERE  region = 'Western Europe'; 
