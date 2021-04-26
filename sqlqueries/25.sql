@@ -1,4 +1,13 @@
-SELECT DISTINCT country.name, sum(distinct country.population),  CONCAT(ROUND(sum(distinct city.population)/sum(distinct country.population)*100), '%'), CONCAT(ROUND((sum(distinct country.population)-sum(distinct city.population))/sum(distinct country.population)*100), '%')
-FROM city JOIN country ON city.countrycode=country.code
-GROUP BY name
-;
+--The population of people, people living in cities, and people not living in cities in each country.
+SELECT 
+       DISTINCT country.name,
+                Sum(DISTINCT country.population) AS ' country popultaion',
+                Concat(Round(Sum(DISTINCT city.population) / Sum(DISTINCT
+                             country.population) * 100), '%') AS 'urban population %',
+                Concat(Round(( Sum(DISTINCT country.population) - Sum(DISTINCT
+                                          city.population) ) / Sum(DISTINCT
+                             country.population) * 100), '%') AS 'rural population %'
+FROM   city
+       JOIN country
+         ON city.countrycode = country.code
+GROUP  BY name; 

@@ -1,4 +1,4 @@
 --The population of the world
-SELECT SUM(population)
-FROM country
-;
+SELECT 
+       SUM(population) AS 'population'
+FROM country;
