@@ -1,10 +1,10 @@
 --The population of people, people living in cities, and people not living in cities in each continent.
-SELECT DISTINCT country.continent,
-    SUM(DISTINCT country.population),  
-    CONCAT(ROUND(SUM(DISTINCT city.population) / SUM(DISTINCT country.population)*100), '%'),
-    CONCAT(ROUND((SUM(DISTINCT country.population) - SUM(DISTINCT city.population)) / SUM(DISTINCT country.population)*100), '%')  
-FROM city 
-    JOIN country 
-    ON city.countrycode = country.code 
-GROUP BY continent
-;
+SELECT
+       DISTINCT country.continent,
+       Sum(DISTINCT country.population) AS 'Total Population',
+       Concat(Round(Sum(DISTINCT city.population) / Sum(DISTINCT country.population) * 100), '%') AS 'Urban Population',
+       Concat(Round(( Sum(DISTINCT country.population) - Sum(DISTINCT city.population) ) / Sum(DISTINCT country.population) * 100), '%') AS 'Rural Population'
+FROM   city
+       JOIN country
+         ON city.countrycode = country.code
+GROUP  BY continent;
