@@ -3,4 +3,4 @@ SELECT
        name,
        population
 FROM   city
-WHERE  name = 'London'; 
+WHERE  name = 'Luxembourg [Luxemburg/Lëtzebuerg]'; 
