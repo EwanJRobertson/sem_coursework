@@ -19,7 +19,7 @@ To access the csv file containing the query results on Windows:
         and replacing <your-filepath> with where you want the file to be saved to
 
 
-###Requirements Met:
+### Requirements Met:
 > 32 requirements of 32 have been implemented, which is 100%.
 
 | ID    | Name | Met  | Screenshot |
