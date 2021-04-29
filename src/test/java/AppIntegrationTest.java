@@ -8,15 +8,19 @@ import java.util.Scanner;
 public class AppIntegrationTest
 {
     static App app;
-
-    // Create App instance and connect to database
+    
+    /**
+     * Initialise an instance of App
+     */
     @BeforeAll
     static void initApp ()
     {
         app = new App();
     }
     
-    // Connect to database
+    /**
+     * Attempt to connect the app to the database using the local host port before each test
+     */
     @BeforeEach
     void initConnect ()
     {
@@ -30,8 +34,9 @@ public class AppIntegrationTest
         }
     }
     
-    
-    // Test app connection to database
+    /**
+     * Test app connection to database
+     */
     @Test
     void connect_Test ()
     {
@@ -45,14 +50,18 @@ public class AppIntegrationTest
         }
     }
 
-    // Test app connection to database
+    /**
+     * Test app connection fails to connect to the database using an empty location string
+     */
     @Test
     void connect_EmptyTest ()
     {
         assertThrows(Exception.class, () -> app.connect(""));
     }
-    
-    // Test app methods
+
+    /**
+     * Test app methods run together and produce the correct results
+     */
     @Test
     void integrationTest ()
     {
@@ -75,15 +84,19 @@ public class AppIntegrationTest
             System.out.println(e.getMessage());
         }
     }
-    
-    // Test disconnect from database when con is not null
+
+    /**
+     * Test disconnect from database when con is not null
+     */
     @Test
     void disconnect_Test ()
     {
         assertDoesNotThrow(() -> app.disconnect());
     }
 
-    // Test disconnect from database when con is null
+    /**
+     * Test disconnect from database when con is null
+     */
     @Test
     void disconnect_NullTest ()
     {
@@ -98,7 +111,9 @@ public class AppIntegrationTest
         assertThrows(Exception.class, () -> app.disconnect());
     }
 
-    // Disconnects from database
+    /**
+     * Disconnect the App from the database after each test
+     */
     @AfterEach
     void disconnect ()
     { 
@@ -112,7 +127,9 @@ public class AppIntegrationTest
         }
     }
 
-    // Deletes test csv file
+    /**
+     * Delete the test csv file once all the test have run
+     */
     @AfterAll
     static void deleteTestFile ()
     {
