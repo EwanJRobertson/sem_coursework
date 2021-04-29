@@ -1,79 +1,83 @@
 import com.napier.sem.App;
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
-import java.sql.*;
 import java.util.Scanner;
 
-class AppUnitTest
-{
+class AppUnitTest {
     static App app;
 
-    // Create App instance and connect to database
+    /**
+     * Creates app and connects to database to allow tests to run
+     */
     @BeforeAll
-    static void init ()
-    {
+    static void init() {
         app = new App();
-        try
-        {
+        try {
             app.connect("localhost:33060");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    // Test that a readable file can be read
+
+    /**
+     * Asserts that when a readable file (exists and has appropriate permissions) is passed to getQuery, it will return a non-null value.
+     */
     @Test
-    void getQuery_FileReadableTest ()
-    {
+    void getQuery_FileReadableTest() {
         assertNotNull(app.getQuery("test1"));
     }
 
-    // Test that a non-readable file returns null
+    /**
+     * Asserts that when a non-readable file (does not exist) is passed to getQuery, it will return null.
+     */
     @Test
-    void getQuery_FileNotReadableTest ()
-    {
+    void getQuery_FileNotReadableTest() {
         assertNull(app.getQuery("test0"));
     }
 
-    // Test that getQuery doesn't read comments by comparing two identical files other than a 1 line comment
+    /**
+     * Asserts that getQuery drops comments when reading in a query by comparing two files where one has a comment but the files are otherwise identical. 
+     */
     @Test
-    void getQuery_SkipCommentTest ()
-    {
+    void getQuery_SkipCommentTest() {
         assertEquals(app.getQuery("test1"), app.getQuery("test2"));
     }
 
-    // Test if executeQuery returns results for a valid sql statement
+    /**
+     * Asserts that when a valid MySQL query is passed to executeQuery, it will return a non-null value.
+     */
     @Test
-    void executeQuery_ResultsTest ()
-    {
+    void executeQuery_ResultsTest() {
         assertNotNull(app.executeQuery("SELECT 1;"));
     }
 
-    // Test if executeQuery returns results for a valid sql statement with no results
+    /**
+     * Asserts that when a valid MySQL query, which has no results in the World database (table 'Elvis'), is passed to executeQuery, it will return null.
+     */
     @Test
-    void executeQuery_NoResultsTest () 
-    {
+    void executeQuery_NoResultsTest() {
         assertNull(app.executeQuery("SELECT * FROM elvis;"));
     }
 
-    // Test if executeQuery returns results for a non valid sql statement
+    /**
+     * Asserts that when a non-valid MySQL query is passed to executeQuery, it will return null.
+     */
     @Test
-    void executeQuery_NonValidStatementTest ()
-    {
+    void executeQuery_NonValidStatementTest() {
         assertNull(app.executeQuery("This is not a query"));
     }
-    
-    // Test if writeQuery writes results to file
+
+    /**
+     * Asserts that when a results set, returned by executeQuery, is passed to writeQuery will write the results to a csv file.
+     */
     @Test
-    void writeQuery_ResultsTest () 
-    {
+    void writeQuery_ResultsTest() {
         app.writeQuery(app.executeQuery("SELECT 1;"), 1, "test-query-results");
 
-        try
-        {
+        try {
             // Create filepath from filename
             File file = new File("test-query-results.csv");
             // Create new Scanner
@@ -82,20 +86,18 @@ class AppUnitTest
             assertEquals("1", scanner.nextLine());
             assertEquals("1", scanner.nextLine());
             scanner.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    // Test writeQuery writes null to file
-    void writeQuery_NoResultsTest ()
-    {
+
+    /**
+     * Asserts that when null is passed to writeQuery, it will not write anything to the csv file.
+     */
+    void writeQuery_NoResultsTest() {
         app.writeQuery(null, 2, "test-query-results");
 
-        try
-        {
+        try {
             // Create filepath from filename
             File file = new File("test-query-results.csv");
             // Create new Scanner
@@ -103,39 +105,33 @@ class AppUnitTest
 
             assertNull(scanner.nextLine());
             scanner.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    // Disconnects from database
+    /**
+     * Disconnects app from database.
+     */
     @AfterAll
-    static void disconnect ()
-    { 
-        try 
-        {
+    static void disconnect() {
+        try {
             app.disconnect();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    // Deletes test csv file
+
+    /**
+     * Deletes csv file used to run tests.
+     */
     @AfterAll
-    static void deleteTestFile ()
-    {
-        try
-        {
+    static void deleteTestFile() {
+        try {
             File file = new File("./test-query-results.csv");
             if (file.delete())
                 System.out.println("Test csv deleted.");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
