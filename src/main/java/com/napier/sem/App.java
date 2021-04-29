@@ -177,8 +177,7 @@ public class App {
 
     /**
      * Main method
-     *
-     * @param args command line arguments
+     * @param args command line arguments, arg[0] is the local port to access the database
      */
     public static void main(String[] args) {
         // Create new Application
