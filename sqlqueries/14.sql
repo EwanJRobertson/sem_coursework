@@ -1,7 +1,7 @@
 --All the capital cities in a continent organised by largest population to smallest.
 SELECT 
-       city.name,
-       country.name,
+       city.name AS 'city',
+       country.name AS 'country',
        city.population
 FROM   city
        JOIN country

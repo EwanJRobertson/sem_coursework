@@ -1,6 +1,6 @@
 --The population of a London
 SELECT 
-       name,
+       name AS 'city',
        population
 FROM   city
 WHERE  name = 'Luxembourg [Luxemburg/Lëtzebuerg]'; 
