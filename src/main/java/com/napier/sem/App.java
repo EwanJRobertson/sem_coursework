@@ -148,7 +148,7 @@ public class App {
 
             String columnNames = "";
             for (int i = 1; i <= rsetMetaData.getColumnCount(); i++)
-                columnNames = columnNames.concat(rsetMetaData.getColumnName(i)).concat(",");
+                columnNames = columnNames.concat(rsetMetaData.getColumnLabel(i)).concat(",");
             columnNames = columnNames.substring(0, columnNames.length() - 1);
             csvWriter.append(columnNames.concat("\n"));
 
