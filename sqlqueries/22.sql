@@ -1,7 +1,7 @@
 --The top N populated capital cities in a region where N is provided by the user.
 SELECT 
-       city.name,
-       country.name,
+       city.name AS 'city',
+       country.name AS 'country',
        city.population
 FROM   city
        JOIN country

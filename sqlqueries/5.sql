@@ -1,12 +1,14 @@
 --The top N populated countries in a continent where N is provided by the user.
 SELECT 
        code,
-       name,
+       country.name AS 'country',
        continent,
        region,
-       population,
-       capital
+       country.population,
+       city.name AS 'capital'
 FROM   country
+       JOIN city
+         ON country.capital = city.ID 
 WHERE  continent = 'Europe'
 ORDER  BY population DESC
 LIMIT  n ;

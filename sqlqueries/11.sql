@@ -1,7 +1,7 @@
 --All the cities in a district organised by largest population to smallest
 SELECT 
-       city.name,
-       country.name,
+       city.name AS 'city',
+       country.name AS 'country',
        city.district,
        city.population
 FROM   city
